@@ -20,20 +20,39 @@ class BaseMode:
         self.screen_manager = screen_manager
         self.home_screen = home_screen
         self.settings_screen = None
+        self.main_screen = None
 
-    def create_settings_page(*args, **kwargs):
+    def create_page(self, name, build):
+        screen = Screen(name=name)
+        main_layout, layout_and_widgets = build()
+        for layout, widgets in layout_and_widgets:
+            for widget in widgets:
+                layout.add_widget(widget)
+        screen.add_widget(main_layout)
+        return screen
+
+    def build_settings_page(self):
         pass
 
-    def create_main_mode_page(*args, **kwargs):
+    def build_main_page(self):
         pass
 
-    def go_to_settings_page(self, *args, **kwargs):
-        print('go_to_settings_page')
-        self.create_settings_page()
+    def create_settings_page(self):
+        self.settings_screen = self.create_page('settings', self.build_settings_page)
+
+    def create_main_page(self):
+        self.main_screen = self.create_page('main', self.build_main_page)
+
+    def go_to_home_page(self, instance):
+        self.screen_manager.switch_to(self.home_screen)
+
+    def go_to_settings_page(self):
+        if self.settings_screen is None:
+            self.create_settings_page()
         self.screen_manager.switch_to(self.settings_screen)
 
-    def go_to_main_mode_page(*args, **kwargs):
-        pass
+    def go_to_main_page(self, instance):
+        self.screen_manager.switch_to(self.main_screen)
 
     def start(*args, **kwargs):
         pass
@@ -42,20 +61,22 @@ class BaseMode:
 class IrregularVerbMode(BaseMode):
     name = 'Learn irregular verbs'
 
-    def create_settings_page(self):
-        self.settings_screen = Screen(name="settings")
+    def build_settings_page(self):
         bx = BoxLayout(orientation='vertical')
+        bt_home = Button(text='Home')
+        bt_home.bind(on_release=self.go_to_home_page)
         self.spiner_level = Spinner(
             text='Select difficulty level',
             values=('Low', 'Middle', 'High', 'All')
         )
-        bt = Button(text='Start')
-        bt.bind(on_release=self.start)
-        bx.add_widget(self.spiner_level)
-        bx.add_widget(bt)
-        self.settings_screen.add_widget(bx)
+        bt_start = Button(text='Start')
+        bt_start.bind(on_release=self.start)
+        return bx, zip(
+            (bx,),
+            ((bt_home, self.spiner_level, bt_start),)
+        )
 
-    def create_main_mode_page(self):
+    def create_main_page(self):
         pass
 
     def start(self, instance):
