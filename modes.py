@@ -14,16 +14,25 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 
 
 class BaseMode:
-    name = 'Name mode'
+    name = 'Base mode name'
 
     def __init__(self, screen_manager, home_screen):
         self.screen_manager = screen_manager
         self.home_screen = home_screen
+        self.settings_screen = None
 
     def create_settings_page(*args, **kwargs):
         pass
 
     def create_main_mode_page(*args, **kwargs):
+        pass
+
+    def go_to_settings_page(self, *args, **kwargs):
+        print('go_to_settings_page')
+        self.create_settings_page()
+        self.screen_manager.switch_to(self.settings_screen)
+
+    def go_to_main_mode_page(*args, **kwargs):
         pass
 
     def start(*args, **kwargs):
@@ -33,19 +42,20 @@ class BaseMode:
 class IrregularVerbMode(BaseMode):
     name = 'Learn irregular verbs'
 
-    def create_settings_page(self, instance):
+    def create_settings_page(self):
+        self.settings_screen = Screen(name="settings")
         bx = BoxLayout(orientation='vertical')
         self.spiner_level = Spinner(
             text='Select difficulty level',
-            values=('Home', 'Work', 'Other', 'Custom')
+            values=('Low', 'Middle', 'High', 'All')
         )
         bt = Button(text='Start')
         bt.bind(on_release=self.start)
         bx.add_widget(self.spiner_level)
         bx.add_widget(bt)
-        self.sm.add_widget(bx)
+        self.settings_screen.add_widget(bx)
 
-    def create_main_mode_page(self, instance):
+    def create_main_mode_page(self):
         pass
 
     def start(self, instance):

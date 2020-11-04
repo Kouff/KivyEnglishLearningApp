@@ -147,7 +147,7 @@ class MyApp(App):
     def add_mode_buttons(self, layout):
         for mode in self.get_modes():
             bt = Button(text=mode.name)
-            bt.bind(on_release=mode.create_settings_page)
+            bt.bind(on_release=mode.go_to_settings_page)
             layout.add_widget(bt)
 
     def create_home_page(self):
@@ -157,6 +157,12 @@ class MyApp(App):
         gl = GridLayout(cols=2)
         bl1.add_widget(lb1)
         self.add_mode_buttons(gl)
+        xxx = self.get_modes()
+
+        bt = Button(text=xxx[0].name)
+        bt.bind(on_press=xxx[0].go_to_settings_page)
+        gl.add_widget(bt)
+
         bl1.add_widget(gl)
         self.home_screen.add_widget(bl1)
 
