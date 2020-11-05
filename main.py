@@ -4,8 +4,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.screenmanager import *
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from random import choice, randint
 
 from modes import IrregularVerbMode, BaseMode
@@ -19,6 +18,7 @@ def update_size(x, y):
 
 
 class MyApp(App):
+    _fs = 64  # font_size
     modes_class = (IrregularVerbMode,)
     instances_of_mods = {}
 
@@ -37,14 +37,14 @@ class MyApp(App):
     def add_mode_buttons(self, layout):
         self.set_modes()
         for mode in self.instances_of_mods.values():
-            bt = Button(text=mode.name)
+            bt = Button(text=mode.name, font_size=self._fs)
             bt.bind(on_release=self.go_to_settings_page)
             layout.add_widget(bt)
 
     def create_home_page(self):
         self.home_screen = Screen(name="home")
-        bl1 = BoxLayout(orientation='vertical', padding=(20, 40, 20, 40))
-        lb1 = Label(text="Home")
+        bl1 = BoxLayout(orientation='vertical', padding=(20, 40, 20, 40), spacing=30)
+        lb1 = Label(text="Home", size_hint=(1, .2), font_size=self._fs)
         gl = GridLayout(cols=2)
         bl1.add_widget(lb1)
         self.add_mode_buttons(gl)
@@ -54,8 +54,7 @@ class MyApp(App):
         self.sm.add_widget(self.home_screen)
 
     def build(self):
-        # self.font_size = 32
-        self.sm = ScreenManager(transition=RiseInTransition())
+        self.sm = ScreenManager(transition=FadeTransition(duration=0.1))
         self.create_home_page()
 
         self.sm.current = 'home'
@@ -66,9 +65,7 @@ if __name__ == "__main__":
     from kivy.core.window import Window
     from kivy.config import Config
 
-    x, y = 1080, 2340
-    Window.size = update_size(x, y)
+    # x, y = 1080, 2340
+    # Window.size = update_size(x, y)
     Config.set('kivy', 'keyboard_mode', 'systemanddock')
-    # for p, ps, pp, r in zip(present, past_simple, past_participle, rus):
-    #     Verb(p, ps, pp, r)
     MyApp().run()
