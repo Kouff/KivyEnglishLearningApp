@@ -5,20 +5,26 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
-from random import choice, randint
-
+from random import choice, randint, random
+import time
+from kivy.clock import Clock
 from modes import IrregularVerbMode, BaseMode
+
+z = 0.4
 
 
 def update_size(x, y):
-    z = 0.4
     xx = x * z
     yy = y * z
     return (xx, yy)
 
 
+def update_font_size(x):
+    return x * z
+
+
 class MyApp(App):
-    _fs = 64  # font_size
+    _fs = update_font_size(64)  # font_size
     modes_class = (IrregularVerbMode,)
     instances_of_mods = {}
 
@@ -28,7 +34,7 @@ class MyApp(App):
 
     def set_modes(self):
         for mode_class in self.modes_class:
-            instance = mode_class(self.sm, self.home_screen)
+            instance = mode_class(self.sm, self.home_screen, self._fs)
             if self.instances_of_mods.get(instance.name) is None:
                 self.instances_of_mods[instance.name] = instance
             else:
@@ -65,7 +71,7 @@ if __name__ == "__main__":
     from kivy.core.window import Window
     from kivy.config import Config
 
-    # x, y = 1080, 2340
-    # Window.size = update_size(x, y)
+    x, y = 1080, 2340
+    Window.size = update_size(x, y)
     Config.set('kivy', 'keyboard_mode', 'systemanddock')
     MyApp().run()

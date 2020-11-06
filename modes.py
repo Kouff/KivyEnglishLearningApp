@@ -18,11 +18,11 @@ from verbs import present, past_simple, past_participle, rus, IrregularVerb
 
 class BaseMode:
     name = 'Base mode name'
-    _fs = 64  # font_size
 
-    def __init__(self, screen_manager, home_screen):
+    def __init__(self, screen_manager, home_screen, font_size):
         self.screen_manager = screen_manager
         self.home_screen = home_screen
+        self._fs = font_size
         self.settings_screen = None
         self.main_screen = None
         self.spiner_level = None
@@ -103,13 +103,14 @@ class IrregularVerbMode(BaseMode):
     def build_main_page(self):
         bx = BoxLayout(orientation='vertical', padding=(20, 40), spacing=10)
         bx_switch_screens = BoxLayout(orientation='horizontal', size_hint=(1, 0.075), spacing=10)
-        bx_main = BoxLayout(orientation='vertical', padding=(0, 30, 0, 0), spacing=10)
+        bx_main = BoxLayout(orientation='vertical', padding=(0, 0, 0, 0), spacing=30)
         bt_home = Button(text='Home', font_size=self._fs)
         bt_home.bind(on_release=self.go_to_home_page)
         bt_settings = Button(text='Back to settings', font_size=self._fs)
         bt_settings.bind(on_release=self.go_to_settings_page)
         self.text_input_main = TextInput(font_size=self._fs, multiline=False)
         self.text_input_main.bind(on_text_validate=self.next_command)
+        self.label_counter = Label(text='0/0', font_size=self._fs//2, size_hint=(1, 0.1))
         self.label_main = Label(font_size=self._fs)
         self.bt_check = Button(text='Check', font_size=self._fs)
         self.bt_check.bind(on_release=self.next_command)
@@ -117,7 +118,7 @@ class IrregularVerbMode(BaseMode):
             (bx_switch_screens, bx_main, bx),
             (
                 (bt_home, bt_settings),
-                (self.text_input_main, self.label_main, self.bt_check),
+                (self.label_counter, self.label_main, self.text_input_main, self.bt_check),
                 (bx_switch_screens, bx_main)
             )
         )
@@ -136,9 +137,12 @@ class IrregularVerbMode(BaseMode):
 
     def update_main_page(self):
         self.text_input_main.text = ''
-        self.verb = choice(IrregularVerb.verbs)
-        self.form, self.word = self.verb.get()
-        self.label_main.text = f"{self.verb.rus}\n<{self.form.capitalize()}>"
+        if IrregularVerb.verbs:
+            self.verb = choice(IrregularVerb.verbs)
+            self.form, self.word = self.verb.get()
+            self.label_main.text = f"{self.verb.rus}\n<{self.form.capitalize()}>"
+        else:
+            self.go_to_settings_page()
 
     def init_mode(self):
         IrregularVerb.verbs = []
@@ -148,8 +152,12 @@ class IrregularVerbMode(BaseMode):
                 self.get_verbs(past_participle),
                 self.get_verbs(rus)):
             IrregularVerb(p, ps, pp, r)
-
+        self.all_verbs = len(IrregularVerb.verbs)
+        self.label_counter.text = self.get_count_verbs()
         self.update_main_page()
+
+    def get_count_verbs(self):
+        return f'{self.all_verbs-len(IrregularVerb.verbs)}/{self.all_verbs}'
 
     def next_command(self, instance):
         command = self.bt_check.text
@@ -157,6 +165,7 @@ class IrregularVerbMode(BaseMode):
             answer = self.text_input_main.text.strip().lower().replace(" ", "")
             if answer == self.word:
                 self.label_main.text = 'Right :)'
+                self.label_counter.text = self.get_count_verbs()
                 self.verb.word_del(self.form)
             else:
                 self.label_main.text = f'Wrong: :(\nRight: {self.word}'
