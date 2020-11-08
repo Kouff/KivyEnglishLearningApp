@@ -13,7 +13,7 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.screenmanager import ScreenManager, Screen
 from random import choice
 
-from verbs import present, past_simple, past_participle, rus, IrregularVerb
+from verbs import present, past_simple, past_participle, rus, IrregularVerb, SentenceBuilder
 
 
 class BaseMode:
@@ -79,7 +79,7 @@ class BaseMode:
 
 
 class IrregularVerbMode(BaseMode):
-    name = 'Learn irregular verbs'
+    name = 'Test of knowledge of irregular verbs'
 
     def build_settings_page(self):
         bx = BoxLayout(orientation='vertical', padding=(20, 40), spacing=60)
@@ -110,8 +110,8 @@ class IrregularVerbMode(BaseMode):
         bt_settings.bind(on_release=self.go_to_settings_page)
         self.text_input_main = TextInput(font_size=self._fs, multiline=False)
         self.text_input_main.bind(on_text_validate=self.next_command)
-        self.label_counter = Label(text='0/0', font_size=self._fs//2, size_hint=(1, 0.1))
-        self.label_main = Label(font_size=self._fs)
+        self.label_counter = Label(text='0/0', font_size=self._fs // 2, size_hint=(1, 0.1))
+        self.label_main = Label(font_size=self._fs, halign="center")
         self.bt_check = Button(text='Check', font_size=self._fs)
         self.bt_check.bind(on_release=self.next_command)
         return bx, zip(
@@ -157,7 +157,7 @@ class IrregularVerbMode(BaseMode):
         self.update_main_page()
 
     def get_count_verbs(self):
-        return f'{self.all_verbs-len(IrregularVerb.verbs)}/{self.all_verbs}'
+        return f'{self.all_verbs - len(IrregularVerb.verbs)}/{self.all_verbs}'
 
     def next_command(self, instance):
         command = self.bt_check.text
@@ -168,8 +168,107 @@ class IrregularVerbMode(BaseMode):
                 self.label_counter.text = self.get_count_verbs()
                 self.verb.word_del(self.form)
             else:
-                self.label_main.text = f'Wrong: :(\nRight: {self.word}'
+                self.label_main.text = f'Wrong :(\nRight: {self.word}'
             self.bt_check.text = 'Next'
         else:
             self.update_main_page()
             self.bt_check.text = 'Check'
+
+
+class SentenceBuildMode(BaseMode):
+    name = 'Sentence building test'
+
+    def build_settings_page(self):
+        bx = BoxLayout(orientation='vertical', padding=(20, 40), spacing=60)
+        bt_home = Button(text='Home', size_hint=(1, 0.23), font_size=self._fs)
+        bt_home.bind(on_release=self.go_to_home_page)
+        lb = Label(text=self.name, font_size=self._fs)
+        self.spiner_level = Spinner(
+            text='Select difficulty level',
+            values=('Low', 'Middle', 'High', 'All'),
+            size_hint=(1, 0.4),
+            font_size=self._fs
+        )
+        self.spiner_level.bind(text=self.set_level)
+        bt_start = Button(text='Start', font_size=self._fs)
+        bt_start.bind(on_release=self.go_to_main_page)
+        return bx, zip(
+            (bx,),
+            ((bt_home, lb, self.spiner_level, bt_start),)
+        )
+
+    def build_main_page(self):
+        bx = BoxLayout(orientation='vertical', padding=(20, 40), spacing=10)
+        bx_switch_screens = BoxLayout(orientation='horizontal', size_hint=(1, 0.075), spacing=10)
+        bx_main = BoxLayout(orientation='vertical', padding=(0, 0, 0, 0), spacing=30)
+        bt_home = Button(text='Home', font_size=self._fs)
+        bt_home.bind(on_release=self.go_to_home_page)
+        bt_settings = Button(text='Back to settings', font_size=self._fs)
+        bt_settings.bind(on_release=self.go_to_settings_page)
+        self.label_counter = Label(font_size=self._fs // 2, halign="center", size_hint=(1, 0.1), markup=True)
+        self.label_main = Label(font_size=self._fs, halign="center", size_hint=(1, 0.8))
+        self.sl_answer = StackLayout(spacing=10)
+        self.sl_build = StackLayout(spacing=10)
+        self.bt_check = Button(text='Check', font_size=self._fs)
+        self.bt_check.bind(on_release=self.next_command)
+        return bx, zip(
+            (bx_switch_screens, bx_main, bx),
+            (
+                (bt_home, bt_settings),
+                (self.label_counter, self.label_main, self.sl_answer, self.sl_build, self.bt_check),
+                (bx_switch_screens, bx_main)
+            )
+        )
+
+    def next_command(self, instance):
+        command = instance.text
+        if command == 'Check':
+            if self.eng[:-1] == ' '.join(self.answer):
+                self.answer_right_counter += 1
+                self.label_main.text = 'Right :)'
+            else:
+                self.answer_wrong_counter += 1
+                self.label_main.text = f'Wrong :(\nRight: {self.eng.capitalize()}'
+            self.update_label_counter()
+            instance.text = 'Next'
+        else:
+            self.update_main_page()
+            instance.text = 'Check'
+
+    def update_buttons(self, instance):
+        if self.bt_check.text == 'Check':
+            if instance.parent is self.sl_build:
+                self.build_buttons(self.sl_answer, [instance.text])
+                self.answer.append(instance.text)
+                self.sl_build.remove_widget(instance)
+            else:
+                self.build_buttons(self.sl_build, [instance.text])
+                self.answer.remove(instance.text)
+                self.sl_answer.remove_widget(instance)
+
+    def build_buttons(self, layout, variables):
+        for variable in variables:
+            button = Button(text=variable, width=self._fs * 1.1 + len(variable) * self._fs * 0.4, size_hint=(None, 0.3), font_size=self._fs)
+            button.bind(on_release=self.update_buttons)
+            layout.add_widget(button)
+
+    def update_main_page(self):
+        self.sl_answer.clear_widgets()
+        self.sl_build.clear_widgets()
+        self.answer = []
+        detail = self.sentence_builder.build_sentence()
+        self.eng = detail['eng']
+        self.label_main.text = detail['rus']
+        self.build_buttons(self.sl_build, detail['world_variants'])
+
+    def update_label_counter(self):
+        text = f'Right: [color=0000ff]{self.answer_right_counter}[/color]   Wrong: [color=0000ff]{self.answer_wrong_counter}[/color]'
+        self.label_counter.text = text
+
+
+    def init_mode(self):
+        self.sentence_builder = SentenceBuilder(self.level)
+        self.answer_right_counter = 0
+        self.answer_wrong_counter = 0
+        self.update_label_counter()
+        self.update_main_page()

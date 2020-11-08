@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, shuffle
 
 present = {
     'Low': (
@@ -107,6 +107,7 @@ class IrregularVerb:
             index = IrregularVerb.verbs.index(self)
             IrregularVerb.verbs.pop(index)
 
+
 # For testing
 # for x1, x2, x3, x4 in zip(present, past_simple, past_participle, rus):
 #     print(x1, x2, x3, x4)
@@ -116,3 +117,171 @@ class IrregularVerb:
 #         print()
 #
 #     print('----------------------------------------')
+
+low_level_regular_verbs = {'kiss': 'целовать', 'love': 'любить', 'work': 'работать', 'live': 'жить', 'add': 'добавлять',
+                           'agree': 'соглашаться',
+                           'answer': 'ответить', 'approve': 'утвердить', 'ask': 'просить', 'balance': 'балансировать',
+                           'battle': 'сражаться', 'call': 'называть', 'change': 'изменять', 'check': 'проверять',
+                           'clean': 'чистить', 'close': 'закрывать', 'coach': 'тренировать',
+                           'connect': 'подключать', 'continue': 'продолжать', 'copy': 'копировать',
+                           'correct': 'корректировать', 'count': 'считать', 'cry': 'плакать', 'dance': 'танцевать',
+                           'depend': 'зависеть', 'develop': 'развивать', 'discover': 'обнаружить', 'divide': 'делить',
+                           'double': 'удваивать', 'dream': 'мечтать', 'dress': 'одевать', 'drop': 'падать',
+                           'dry': 'сушить', 'dust': 'пылить', 'empty': 'опорожнять', 'end': 'заканчивать',
+                           'enjoy': 'наслаждаться', 'enter': 'входить', 'escape': 'бежать',
+                           'exist': 'существовать', 'fear': 'бояться', 'fill': 'заполнять', 'fix': 'чинить',
+                           'flood': 'затопить', 'fool': 'обманывать', 'guard': 'охранять', 'hate': 'ненавидеть',
+                           'help': 'помогать', 'hope': 'надеяться', 'hug': 'обнимать',
+                           'hunt': 'охотиться', 'ignore': 'игнорировать', 'include': 'включать', 'invite': 'приглашать',
+                           'join': 'вступать', 'jump': 'прыгать', 'kick': 'пинать', 'laugh': 'смеяться',
+                           'launch': 'запускать', 'like': 'нравиться', 'listen': 'слушать',
+                           'load': 'грузить', 'lock': 'запирать', 'look': 'посмотреть', 'manage': 'управлять',
+                           'move': 'двигаться', 'multiply': 'умножить', 'name': 'называть', 'need': 'нуждаться',
+                           'number': 'нумеровать', 'observe': 'наблюдать', 'offer': 'предлагать',
+                           'milk': 'доить', 'mine': 'добывать', 'miss': 'скучать', 'mix': 'смешивать',
+                           'open': 'открыть', 'order': 'заказывать', 'own': 'владеть', 'paint': 'покрасить',
+                           'paste': 'вставить', 'pause': 'приостанавливаться', 'play': 'играть',
+                           'point': 'указывать', 'press': 'нажимать', 'print': 'печатать', 'pull': 'тянуть',
+                           'push': 'толкать', 'race': 'мчаться', 'raise': 'поднимать', 'record': 'записывать',
+                           'relax': 'расслабляться', 'remember': 'помнить', 'remove': 'удалять',
+                           'repeat': 'повторять', 'replace': 'заменять', 'reply': 'отвечать', 'report': 'доклад',
+                           'request': 'запрашивать', 'return': 'возвращать', 'save': 'сохранять', 'scream': 'кричать',
+                           'search': 'искать', 'share': 'делиться', 'skip': 'пропускать',
+                           'smile': 'улыбаться', 'spray': 'опрыскивать', 'start': 'начинать', 'stay': 'оставаться',
+                           'step': 'шагать', 'stop': 'остановить', 'strip': 'раздевать', 'support': 'поддерживать',
+                           'surprise': 'удивлять', 'suspect': 'подозревать', 'suspend': 'приостанавливать',
+                           'switch': 'переключать', 'talk': 'говорить', 'taste': 'пробовать', 'thank': 'благодарить',
+                           'touch': 'касаться', 'trade': 'торговать', 'travel': 'путешествовать',
+                           'trouble': 'беспокоить', 'try': 'пытаться', 'trust': 'доверять', 'twist': 'крутить',
+                           'unlock': 'разблокировать', 'unpack': 'распаковывать', 'use': 'пользоваться',
+                           'visit': 'посещать', 'wait': 'ждать', 'walk': 'ходить', 'want': 'хотеть',
+                           'warm': 'согревать', 'wash': 'мыть', 'watch': 'смотреть', 'welcome': 'приветствовать',
+                           'wipe': 'протирать', 'worry': 'беспокоиться', 'yell': 'кричать', 'zip': 'застегивать',
+                           'zoom': 'увеличить'}
+# middle_level_regular_verbs = {'': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '',
+#                               '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '',
+#                               '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '',
+#                               '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '',
+#                               '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '',
+#                               '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': '', '': ''}
+subjects = {'I': 'я', 'you': 'ты', 'he': 'он', 'she': 'она', 'we': 'мы', 'they': 'они'}
+
+
+class SentenceBuilder:
+    x = ('future', 'present', 'past')
+    y = ('negative', 'affirmative', 'interrogative')
+    vowels = ('e', 'i', 'o', 'a', 'u', 'y')
+
+    def __init__(self, level=None):
+        self.level = level
+
+    def build_sentence(self):
+        sentence_form = getattr(self, f'{choice(self.x)}_{choice(self.y)}')
+        verb = self.get_random_verb()
+        subject = choice(list(subjects.keys()))
+        result = sentence_form((verb, low_level_regular_verbs[verb]), (subject, subjects[subject]))
+        result.update({'world_variants': self.get_word_variants(verb, subject)})
+        return result
+
+    def get_random_verb(self):
+        # if self.level == 'Low':
+        #     pass
+        verb = choice(list(low_level_regular_verbs.keys()))
+        return verb
+
+    def get_word_variants(self, verb, subject):
+        variants = ['will', 'not', 'did', 'do', 'does', subject, verb, self.get_past_verb(verb),
+                    self.get_verb_for_he_she(verb)]
+        shuffle(variants)
+        return variants
+
+    def get_present_do(self, subject):
+        if subject in ('he', 'she'):
+            return 'does'
+        return 'do'
+
+    def get_past_verb(self, verb):
+        if verb.endswith('e'):
+            return verb + 'd'
+        elif verb[-2] not in self.vowels and verb[-1] == 'y':
+            return verb[:-1] + 'ied'
+        elif len(verb) > 2 and verb[-3] not in self.vowels and verb[-2] in ('i', 'o', 'a', 'u',) and verb[
+            -3] not in self.vowels:
+            return verb + verb[-1] + 'ed'
+        return verb + 'ed'
+
+    def get_verb_for_he_she(self, verb):
+        if verb[-2] not in self.vowels and verb[-1] == 'y':
+            return verb[:-1] + 'ies'
+        elif verb[-1] in ('o', 's', 'x', 'z') or verb.endswith('sh') or verb.endswith('ch') or verb.endswith('tch'):
+            return verb + 'es'
+        return verb + 's'
+
+    def get_rus_verb(self, time, verb):
+        if time == 'future':
+            pass
+
+    def get_rus_will(self, subject):
+        if subject == 'я':
+            return 'буду'
+        elif subject == 'ты':
+            return 'будешь'
+        elif subject == 'мы':
+            return 'будем'
+        elif subject == 'они':
+            return 'будут'
+        elif subject in ('он', 'она'):
+            return 'будет'
+        return 'буду'
+
+    def future_negative(self, verb, subject):  # 1 -
+        eng_sentence = f'{subject[0]} will not {verb[0]}.'
+        rus_sentence = f'{subject[1]} не {self.get_rus_will(subject[1])} {verb[1]}.'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def future_affirmative(self, verb, subject):  # 1 +
+        eng_sentence = f'{subject[0]} will {verb[0]}.'
+        rus_sentence = f'{subject[1]} {self.get_rus_will(subject[1])} {verb[1]}.'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def future_interrogative(self, verb, subject):  # 1 ?
+        eng_sentence = f'will {subject[0]} {verb[0]}?'
+        rus_sentence = f'{subject[1]} {self.get_rus_will(subject[1])} {verb[1]}?'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def present_negative(self, verb, subject):  # 0 -
+        eng_sentence = f'{subject[0]} {self.get_present_do(subject[0])} not {verb[0]}.'
+        rus_sentence = f'{subject[1]} не {verb[1]}. (Текущее)'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def present_affirmative(self, verb, subject):  # 0 +
+        v = verb[0]
+        if subject[0] in ('she', 'he'):
+            v = self.get_verb_for_he_she(v)
+        eng_sentence = f'{subject[0]} {v}.'
+        rus_sentence = f'{subject[1]} {verb[1]}. (Текущее)'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def present_interrogative(self, verb, subject):  # 0 ?
+        eng_sentence = f'{self.get_present_do(subject[0])} {subject[0]} {verb[0]}?'
+        rus_sentence = f'{subject[1]} {verb[1]}? (Текущее)'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def past_negative(self, verb, subject):  # -1 -
+        eng_sentence = f'{subject[0]} did not {verb[0]}.'
+        rus_sentence = f'{subject[1]} не {verb[1]}. (Прошлое)'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def past_affirmative(self, verb, subject):  # -1 +
+        eng_sentence = f'{subject[0]} {self.get_past_verb(verb[0])}.'
+        rus_sentence = f'{subject[1]} {verb[1]}. (Прошлое)'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+    def past_interrogative(self, verb, subject):  # -1 ?
+        eng_sentence = f'did {subject[0]} {verb[0]}?'
+        rus_sentence = f'{subject[1]} {verb[1]}? (Прошлое)'
+        return {'eng': eng_sentence, 'rus': rus_sentence.capitalize()}
+
+# она будет любить / она не будет любить /
+# она любит / она не любит
+# она любила / она не любила

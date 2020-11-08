@@ -8,9 +8,10 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from random import choice, randint, random
 import time
 from kivy.clock import Clock
-from modes import IrregularVerbMode, BaseMode
+from modes import IrregularVerbMode, SentenceBuildMode
 
-z = 0.4
+# z = 0.4  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+z = 1
 
 
 def update_size(x, y):
@@ -25,7 +26,7 @@ def update_font_size(x):
 
 class MyApp(App):
     _fs = update_font_size(64)  # font_size
-    modes_class = (IrregularVerbMode,)
+    modes_class = (IrregularVerbMode, SentenceBuildMode)
     instances_of_mods = {}
 
     def go_to_settings_page(self, instance):
@@ -51,7 +52,7 @@ class MyApp(App):
         self.home_screen = Screen(name="home")
         bl1 = BoxLayout(orientation='vertical', padding=(20, 40, 20, 40), spacing=30)
         lb1 = Label(text="Home", size_hint=(1, .2), font_size=self._fs)
-        gl = GridLayout(cols=2)
+        gl = GridLayout(rows=2)  # cols=2)
         bl1.add_widget(lb1)
         self.add_mode_buttons(gl)
         bl1.add_widget(gl)
@@ -71,7 +72,7 @@ if __name__ == "__main__":
     from kivy.core.window import Window
     from kivy.config import Config
 
-    x, y = 1080, 2340
-    Window.size = update_size(x, y)
+    # x, y = 1080, 2340
+    # Window.size = update_size(x, y)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     Config.set('kivy', 'keyboard_mode', 'systemanddock')
     MyApp().run()
